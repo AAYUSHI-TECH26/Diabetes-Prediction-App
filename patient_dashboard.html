@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Patient Dashboard{% endblock %}
+{% block content %}
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+    <div>
+        <h1>👤 Patient Dashboard</h1>
+        <p style="color:#718096; margin-top:4px;">Welcome, {{ session.user_name }}!</p>
+    </div>
+    <a href="{{ url_for('predict') }}" class="btn btn-accent">+ New Prediction</a>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="num">{{ records|length }}</div>
+        <div class="lbl">Total Tests</div>
+    </div>
+    <div class="stat-card" style="border-color:#e74c3c;">
+        <div class="num" style="color:#e74c3c;">{{ records|selectattr('prediction','equalto',1)|list|length }}</div>
+        <div class="lbl">Positive Results</div>
+    </div>
+    <div class="stat-card" style="border-color:#27ae60;">
+        <div class="num" style="color:#27ae60;">{{ records|selectattr('prediction','equalto',0)|list|length }}</div>
+        <div class="lbl">Negative Results</div>
+    </div>
+    <div class="stat-card" style="border-color:#f39c12;">
+        <div class="num" style="color:#f39c12;">{{ records|selectattr('doctor_verified','equalto',1)|list|length }}</div>
+        <div class="lbl">Doctor Verified</div>
+    </div>
+</div>
+
+<div class="card" style="margin-top:1rem;">
+    <h3 style="margin-bottom:1.2rem;">📋 My Prediction History</h3>
+    {% if records %}
+    <div style="overflow-x:auto;">
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Glucose</th>
+                <th>BMI</th>
+                <th>Risk Score</th>
+                <th>Result</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for r in records %}
+        <tr>
+            <td>{{ r['id'] }}</td>
+            <td style="color:#718096; font-size:0.85rem;">{{ r['created_at'][:16] }}</td>
+            <td>{{ r['glucose'] }}</td>
+            <td>{{ r['bmi'] }}</td>
+            <td>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <div style="background:#e2e8f0; border-radius:10px; height:8px; width:80px;">
+                        <div style="background:{% if r['risk_score']>50 %}#e74c3c{% else %}#27ae60{% endif %};
+                                    border-radius:10px; height:8px; width:{{ r['risk_score'] }}%;"></div>
+                    </div>
+                    <span style="font-size:0.85rem; font-weight:600;">{{ r['risk_score'] }}%</span>
+                </div>
+            </td>
+            <td>
+                <span class="badge {% if r['prediction']==1 %}badge-danger{% else %}badge-success{% endif %}">
+                    {% if r['prediction']==1 %}⚠ Diabetic{% else %}✓ Normal{% endif %}
+                </span>
+            </td>
+            <td>
+                {% if r['doctor_verified'] %}
+                <span class="badge badge-success">✓ Verified</span>
+                {% else %}
+                <span class="badge badge-warning">⏳ Pending</span>
+                {% endif %}
+            </td>
+            <td>
+                <a href="{{ url_for('download_report', pred_id=r['id']) }}" class="btn btn-outline" style="padding:5px 12px; font-size:0.8rem;">📄 PDF</a>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    {% else %}
+    <div style="text-align:center; padding:3rem; color:#718096;">
+        <div style="font-size:3rem; margin-bottom:1rem;">🔬</div>
+        <p>No predictions yet. <a href="{{ url_for('predict') }}" style="color:#0d9488;">Take your first test →</a></p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

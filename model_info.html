@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Model Info{% endblock %}
+{% block content %}
+<div style="margin-bottom:1.5rem;">
+    <h1>📊 ML Model Information</h1>
+    <p style="color:#718096; margin-top:4px;">Ensemble model trained on Pima Indian Diabetes Dataset</p>
+</div>
+
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="num">{{ stats.accuracy }}%</div>
+        <div class="lbl">Accuracy</div>
+    </div>
+    <div class="stat-card" style="border-color:#e74c3c;">
+        <div class="num" style="color:#e74c3c;">{{ stats.roc_auc }}%</div>
+        <div class="lbl">ROC-AUC Score</div>
+    </div>
+    <div class="stat-card" style="border-color:#f39c12;">
+        <div class="num" style="color:#f39c12;">{{ stats.f1_score }}%</div>
+        <div class="lbl">F1 Score</div>
+    </div>
+    <div class="stat-card" style="border-color:#8e44ad;">
+        <div class="num" style="color:#8e44ad;">{{ stats.cv_accuracy }}%</div>
+        <div class="lbl">5-Fold CV Accuracy</div>
+    </div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1rem;">
+
+    <!-- Model Details -->
+    <div class="card">
+        <h3 style="margin-bottom:1rem;">🤖 Model Architecture</h3>
+        <table style="font-size:0.9rem;">
+            <tr><td style="color:#718096; padding:8px 0; border:none;">Algorithm</td><td style="font-weight:600; border:none;">{{ stats.algorithm }}</td></tr>
+            <tr><td style="color:#718096; padding:8px 0; border:none;">Dataset</td><td style="font-weight:600; border:none;">{{ stats.dataset }}</td></tr>
+            <tr><td style="color:#718096; padding:8px 0; border:none;">Training Samples</td><td style="font-weight:600; border:none;">{{ stats.train_samples }}</td></tr>
+            <tr><td style="color:#718096; padding:8px 0; border:none;">Testing Samples</td><td style="font-weight:600; border:none;">{{ stats.test_samples }}</td></tr>
+            <tr><td style="color:#718096; padding:8px 0; border:none;">Features Used</td><td style="font-weight:600; border:none;">{{ stats.features_used }}</td></tr>
+            <tr><td style="color:#718096; padding:8px 0; border:none;">Precision</td><td style="font-weight:600; border:none;">{{ stats.precision }}%</td></tr>
+            <tr><td style="color:#718096; padding:8px 0; border:none;">Recall (Sensitivity)</td><td style="font-weight:600; border:none;">{{ stats.recall }}%</td></tr>
+        </table>
+    </div>
+
+    <!-- Feature Importance -->
+    <div class="card">
+        <h3 style="margin-bottom:1rem;">🔑 Feature Importances</h3>
+        {% set fi = stats.feature_importances %}
+        {% set max_val = fi.values()|max %}
+        {% for feat, imp in fi.items()|sort(attribute='1', reverse=True) %}
+        <div style="margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:3px;">
+                <span style="font-weight:600; text-transform:capitalize;">{{ feat.replace('_',' ') }}</span>
+                <span style="color:#718096;">{{ (imp * 100)|round(1) }}%</span>
+            </div>
+            <div style="background:#e2e8f0; border-radius:6px; height:10px;">
+                <div style="background:linear-gradient(90deg,#0d9488,#1a3a5c);
+                            width:{{ ((imp / max_val) * 100)|round(1) }}%;
+                            height:100%; border-radius:6px;"></div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Ensemble Explanation -->
+<div class="card" style="margin-top:1.5rem;">
+    <h3 style="margin-bottom:1.2rem;">🧬 How the Ensemble Works</h3>
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;">
+        <div style="background:#f0f4f8; border-radius:12px; padding:1.2rem; border-top:4px solid #1a3a5c; text-align:center;">
+            <div style="font-size:1.8rem; margin-bottom:0.5rem;">🌲</div>
+            <div style="font-weight:700; margin-bottom:4px;">Random Forest</div>
+            <div style="font-size:0.82rem; color:#718096;">150 decision trees with bagging. Weight: 45%</div>
+        </div>
+        <div style="background:#f0f4f8; border-radius:12px; padding:1.2rem; border-top:4px solid #0d9488; text-align:center;">
+            <div style="font-size:1.8rem; margin-bottom:0.5rem;">📈</div>
+            <div style="font-weight:700; margin-bottom:4px;">Gradient Boosting</div>
+            <div style="font-size:0.82rem; color:#718096;">Sequential error correction with 100 estimators. Weight: 40%</div>
+        </div>
+        <div style="background:#f0f4f8; border-radius:12px; padding:1.2rem; border-top:4px solid #f39c12; text-align:center;">
+            <div style="font-size:1.8rem; margin-bottom:0.5rem;">📐</div>
+            <div style="font-weight:700; margin-bottom:4px;">Logistic Regression</div>
+            <div style="font-size:0.82rem; color:#718096;">Linear boundary baseline for interpretability. Weight: 15%</div>
+        </div>
+    </div>
+    <div style="margin-top:1.2rem; background:#f7f9fc; padding:1rem; border-radius:10px; font-size:0.88rem; color:#4a5568;">
+        <strong>Soft Voting:</strong> Each model predicts a probability. The final score is a weighted average:
+        <code style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">P = 0.45×RF + 0.40×GBM + 0.15×LR</code>.
+        Predicted diabetic if P ≥ 0.50.
+    </div>
+</div>
+
+<!-- Feature Engineering -->
+<div class="card" style="margin-top:1.5rem;">
+    <h3 style="margin-bottom:1rem;">⚙️ Feature Engineering (Advanced)</h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; font-size:0.88rem;">
+        <div style="background:#f0fff4; padding:1rem; border-radius:10px; border:1px solid #c3e6cb;">
+            <strong>glucose_insulin_ratio</strong><br>
+            <span style="color:#555;">Glucose ÷ (Insulin + 1) — detects insulin resistance</span>
+        </div>
+        <div style="background:#f0fff4; padding:1rem; border-radius:10px; border:1px solid #c3e6cb;">
+            <strong>bmi_age interaction</strong><br>
+            <span style="color:#555;">BMI × Age — combined metabolic risk factor</span>
+        </div>
+        <div style="background:#f0fff4; padding:1rem; border-radius:10px; border:1px solid #c3e6cb;">
+            <strong>glucose_cat</strong><br>
+            <span style="color:#555;">Glucose binned: Normal / Pre-diabetic / Diabetic / Critical</span>
+        </div>
+        <div style="background:#f0fff4; padding:1rem; border-radius:10px; border:1px solid #c3e6cb;">
+            <strong>bmi_cat</strong><br>
+            <span style="color:#555;">BMI binned: Underweight / Normal / Overweight / Obese</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

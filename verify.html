@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Verify Report{% endblock %}
+{% block content %}
+<div style="max-width:700px; margin:0 auto;">
+    <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem;">
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline" style="padding:7px 14px; font-size:0.85rem;">← Back</a>
+        <div>
+            <h1>✅ Verify Patient Report #{{ record['id'] }}</h1>
+            <p style="color:#718096; font-size:0.9rem; margin-top:2px;">Review and verify the AI prediction for {{ record['patient_name'] }}</p>
+        </div>
+    </div>
+
+    <!-- Patient Summary -->
+    <div class="card" style="margin-bottom:1.5rem;">
+        <h3 style="margin-bottom:1rem;">🧑 Patient Information</h3>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; font-size:0.9rem;">
+
+            <div style="background:#f7f9fc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0;">
+                <span style="font-size:0.8rem; color:#718096;">Patient Name</span>
+                <div style="font-weight:600; margin-top:2px;">{{ record['patient_name'] }}</div>
+            </div>
+            <div style="background:#f7f9fc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0;">
+                <span style="font-size:0.8rem; color:#718096;">Date</span>
+                <div style="font-weight:600; margin-top:2px;">{{ record['created_at'][:16] }}</div>
+            </div>
+            <div style="background:#f7f9fc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0;">
+                <span style="font-size:0.8rem; color:#718096;">Glucose</span>
+                <div style="font-weight:600; margin-top:2px;">{{ record['glucose'] }} mg/dL</div>
+            </div>
+            <div style="background:#f7f9fc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0;">
+                <span style="font-size:0.8rem; color:#718096;">BMI</span>
+                <div style="font-weight:600; margin-top:2px;">{{ record['bmi'] }} kg/m²</div>
+            </div>
+            <div style="background:#f7f9fc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0;">
+                <span style="font-size:0.8rem; color:#718096;">Age</span>
+                <div style="font-weight:600; margin-top:2px;">{{ record['age'] }} years</div>
+            </div>
+            <div style="background:#f7f9fc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0;">
+                <span style="font-size:0.8rem; color:#718096;">Blood Pressure</span>
+                <div style="font-weight:600; margin-top:2px;">{{ record['blood_pressure'] }} mmHg</div>
+            </div>
+            <div style="background:#f7f9fc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0;">
+                <span style="font-size:0.8rem; color:#718096;">Insulin</span>
+                <div style="font-weight:600; margin-top:2px;">{{ record['insulin'] }} μU/mL</div>
+            </div>
+            <div style="background:#f7f9fc; padding:10px 14px; border-radius:10px; border:1px solid #e2e8f0;">
+                <span style="font-size:0.8rem; color:#718096;">Pedigree</span>
+                <div style="font-weight:600; margin-top:2px;">{{ record['diabetes_pedigree'] }}</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- AI Prediction -->
+    <div class="card" style="margin-bottom:1.5rem; border-left:5px solid
+         {% if record['prediction']==1 %}#e74c3c{% else %}#27ae60{% endif %};">
+        <h3>🤖 AI Prediction</h3>
+        <div style="display:flex; gap:2rem; margin-top:1rem; flex-wrap:wrap;">
+            <div>
+                <div style="font-size:0.8rem; color:#718096;">Diagnosis</div>
+                <div style="font-size:1.4rem; font-weight:800;
+                     color:{% if record['prediction']==1 %}#e74c3c{% else %}#27ae60{% endif %};">
+                    {{ '⚠ DIABETIC' if record['prediction']==1 else '✓ NON-DIABETIC' }}
+                </div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem; color:#718096;">Risk Score</div>
+                <div style="font-size:1.4rem; font-weight:800; color:#1a3a5c;">{{ record['risk_score'] }}%</div>
+            </div>
+            <div>
+                <div style="font-size:0.8rem; color:#718096;">Risk Level</div>
+                <div style="font-size:1.1rem; font-weight:700;">{{ record['risk_level'] }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Doctor Verification Form -->
+    {% if not record['doctor_verified'] %}
+    <div class="card">
+        <h3 style="margin-bottom:1rem;">📝 Add Your Assessment</h3>
+        <form method="POST">
+            <div style="margin-bottom:1.2rem;">
+                <label>Doctor's Notes (Optional)</label>
+                <textarea name="notes" rows="4" placeholder="Add clinical observations, recommendations, or corrections to the AI prediction..."></textarea>
+            </div>
+            <div class="alert alert-info" style="margin-bottom:1rem; font-size:0.85rem;">
+                ℹ By clicking Verify, you confirm that you have reviewed this prediction and take clinical responsibility for the report.
+            </div>
+            <div style="display:flex; gap:1rem;">
+                <button type="submit" class="btn btn-success" style="flex:1; padding:12px; font-size:1rem;">✅ Verify & Sign Report</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-outline" style="flex:1; padding:12px; font-size:1rem; text-align:center;">Cancel</a>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div class="alert alert-success">
+        ✓ This report has already been verified.
+        {% if record['doctor_notes'] %}<br><strong>Notes:</strong> {{ record['doctor_notes'] }}{% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

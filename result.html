@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Prediction Result{% endblock %}
+{% block content %}
+<div style="max-width:720px; margin:0 auto;">
+    <!-- Main Result Banner -->
+    <div class="card" style="text-align:center; padding:2.5rem;
+         background:{% if result.prediction==1 %}linear-gradient(135deg,#c0392b,#e74c3c){% else %}linear-gradient(135deg,#1e8449,#27ae60){% endif %};
+         color:#fff; margin-bottom:1.5rem;">
+        <div style="font-size:4rem; margin-bottom:0.5rem;">
+            {{ '⚠️' if result.prediction==1 else '✅' }}
+        </div>
+        <h2 style="font-size:2rem; color:#fff; margin-bottom:0.4rem;">
+            {{ 'DIABETIC' if result.prediction==1 else 'NON-DIABETIC' }}
+        </h2>
+        <p style="opacity:0.9; font-size:1.1rem;">{{ result.risk_level }}</p>
+        <div style="margin-top:1.2rem;">
+            <span style="background:rgba(255,255,255,0.2); padding:8px 20px; border-radius:20px; font-size:1rem; font-weight:700;">
+                Risk Score: {{ result.risk_score }}%
+            </span>
+        </div>
+    </div>
+
+    <!-- Risk Bar -->
+    <div class="card" style="margin-bottom:1.5rem; padding:1.5rem;">
+        <h3 style="margin-bottom:1rem;">📊 Risk Probability</h3>
+        <div style="background:#e2e8f0; border-radius:12px; height:20px; overflow:hidden;">
+            <div style="background:{% if result.risk_score>50 %}linear-gradient(90deg,#f39c12,#e74c3c){% else %}linear-gradient(90deg,#27ae60,#0d9488){% endif %};
+                        width:{{ result.risk_score }}%; height:100%; border-radius:12px;
+                        transition:width 1s ease; display:flex; align-items:center; justify-content:flex-end; padding-right:8px;">
+            </div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#718096; margin-top:6px;">
+            <span>0% — No Risk</span>
+            <span><strong>{{ result.risk_score }}%</strong></span>
+            <span>100% — High Risk</span>
+        </div>
+    </div>
+
+    <!-- Input Summary -->
+    <div class="card" style="margin-bottom:1.5rem;">
+        <h3 style="margin-bottom:1rem;">📋 Your Measurements</h3>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0.8rem;">
+            {% for label, key, unit in [
+                ('Pregnancies','pregnancies',''),
+                ('Glucose','glucose','mg/dL'),
+                ('Blood Pressure','blood_pressure','mmHg'),
+                ('Skin Thickness','skin_thickness','mm'),
+                ('Insulin','insulin','μU/mL'),
+                ('BMI','bmi','kg/m²'),
+                ('Pedigree','diabetes_pedigree',''),
+                ('Age','age','yrs')
+            ] %}
+            <div style="background:#f7f9fc; border-radius:10px; padding:0.8rem; text-align:center; border:1px solid #e2e8f0;">
+                <div style="font-size:1.1rem; font-weight:800; color:#1a3a5c;">{{ features[key] }}</div>
+                <div style="font-size:0.7rem; color:#718096; margin-top:2px;">{{ label }}</div>
+                {% if unit %}<div style="font-size:0.65rem; color:#a0aec0;">{{ unit }}</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Clinical Insights -->
+    <div class="card" style="margin-bottom:1.5rem;">
+        <h3 style="margin-bottom:1rem;">🧠 AI Insights</h3>
+        {% for insight in result.insights %}
+        <div style="padding:10px 14px; margin-bottom:8px; border-radius:10px;
+             background:{% if '⚠' in insight %}#fff3f3{% elif 'ℹ' in insight %}#fff8e6{% else %}#f0fff4{% endif %};
+             border-left:4px solid {% if '⚠' in insight %}#e74c3c{% elif 'ℹ' in insight %}#f39c12{% else %}#27ae60{% endif %};
+             font-size:0.9rem;">
+            {{ insight }}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+        <a href="{{ url_for('download_report', pred_id=pred_id) }}" class="btn btn-primary" style="flex:1; text-align:center; padding:13px;">
+            📄 Download PDF Report
+        </a>
+        <a href="{{ url_for('predict') }}" class="btn btn-outline" style="flex:1; text-align:center; padding:13px;">
+            🔄 New Prediction
+        </a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-accent" style="flex:1; text-align:center; padding:13px;">
+            🏠 Dashboard
+        </a>
+    </div>
+
+    <p style="text-align:center; margin-top:1.2rem; font-size:0.8rem; color:#718096;">
+        ⚠ This is an AI prediction tool for educational purposes. Always consult a qualified doctor for medical advice.
+    </p>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Diabetes Check{% endblock %}
+{% block content %}
+<div style="max-width:700px; margin:0 auto;">
+    <div style="margin-bottom:1.5rem;">
+        <h1>🔬 Diabetes Risk Assessment</h1>
+        <p style="color:#718096; margin-top:4px;">Enter your clinical data for AI-powered diabetes risk prediction</p>
+    </div>
+
+    <div class="card">
+        <form method="POST">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.2rem;">
+
+                <div>
+                    <label>🤰 Pregnancies</label>
+                    <input type="number" name="pregnancies" min="0" max="20" step="1" placeholder="0" required>
+                    <small style="color:#718096; font-size:0.78rem;">Number of times pregnant</small>
+                </div>
+
+                <div>
+                    <label>🍬 Glucose (mg/dL)</label>
+                    <input type="number" name="glucose" min="0" max="300" step="0.1" placeholder="120" required>
+                    <small style="color:#718096; font-size:0.78rem;">Plasma glucose concentration</small>
+                </div>
+
+                <div>
+                    <label>💉 Blood Pressure (mmHg)</label>
+                    <input type="number" name="blood_pressure" min="0" max="200" step="0.1" placeholder="72" required>
+                    <small style="color:#718096; font-size:0.78rem;">Diastolic blood pressure</small>
+                </div>
+
+                <div>
+                    <label>📏 Skin Thickness (mm)</label>
+                    <input type="number" name="skin_thickness" min="0" max="100" step="0.1" placeholder="23" required>
+                    <small style="color:#718096; font-size:0.78rem;">Triceps skin fold thickness</small>
+                </div>
+
+                <div>
+                    <label>🧪 Insulin (μU/mL)</label>
+                    <input type="number" name="insulin" min="0" max="900" step="0.1" placeholder="80" required>
+                    <small style="color:#718096; font-size:0.78rem;">2-hour serum insulin (0 if unknown)</small>
+                </div>
+
+                <div>
+                    <label>⚖️ BMI (kg/m²)</label>
+                    <input type="number" name="bmi" min="0" max="70" step="0.1" placeholder="31.5" required>
+                    <small style="color:#718096; font-size:0.78rem;">Body mass index</small>
+                </div>
+
+                <div>
+                    <label>🧬 Diabetes Pedigree Function</label>
+                    <input type="number" name="diabetes_pedigree" min="0" max="3" step="0.001" placeholder="0.35" required>
+                    <small style="color:#718096; font-size:0.78rem;">Family history score (0.0 – 2.5)</small>
+                </div>
+
+                <div>
+                    <label>🎂 Age (years)</label>
+                    <input type="number" name="age" min="1" max="120" step="1" placeholder="33" required>
+                    <small style="color:#718096; font-size:0.78rem;">Your current age</small>
+                </div>
+            </div>
+
+            <div style="background:#f0f4f8; border-radius:10px; padding:1rem; margin:1.5rem 0; font-size:0.85rem; color:#718096;">
+                💡 <strong>Tip:</strong> Enter <code>0</code> for skin thickness and insulin if values are unknown. The model handles missing data using median imputation.
+            </div>
+
+            <button type="submit" class="btn btn-accent" style="width:100%; font-size:1.05rem; padding:14px;">
+                🔮 Predict Diabetes Risk
+            </button>
+        </form>
+    </div>
+
+    <!-- Quick example filler -->
+    <div class="card" style="margin-top:1rem; padding:1.2rem 1.5rem; background:#f7f9fc;">
+        <p style="font-size:0.85rem; color:#718096; margin-bottom:0.5rem;"><strong>Quick Fill — Demo Values:</strong></p>
+        <div style="display:flex; gap:0.8rem; flex-wrap:wrap;">
+            <button onclick="fillHighRisk()" class="btn btn-danger" style="padding:6px 14px; font-size:0.82rem;">⚠ High Risk Example</button>
+            <button onclick="fillLowRisk()" class="btn btn-success" style="padding:6px 14px; font-size:0.82rem;">✓ Low Risk Example</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function fillHighRisk() {
+    const d = {pregnancies:6, glucose:148, blood_pressure:72, skin_thickness:35,
+                insulin:0, bmi:33.6, diabetes_pedigree:0.627, age:50};
+    for(let k in d) document.querySelector(`[name="${k}"]`).value = d[k];
+}
+function fillLowRisk() {
+    const d = {pregnancies:1, glucose:85, blood_pressure:66, skin_thickness:29,
+                insulin:0, bmi:26.6, diabetes_pedigree:0.351, age:31};
+    for(let k in d) document.querySelector(`[name="${k}"]`).value = d[k];
+}
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div style="text-align:center; padding:4rem 1rem 2rem;">
+    <div style="font-size:5rem; margin-bottom:1rem;">🩺</div>
+    <h1 style="font-size:2.6rem; margin-bottom:0.6rem;">Diabetes Prediction System</h1>
+    <p style="font-size:1.1rem; color:#718096; max-width:540px; margin:0 auto 2rem;">
+        AI-powered early detection using the <strong>Pima Indian Diabetes Dataset</strong>.
+        Ensemble ML model with doctor-verified PDF reports.
+    </p>
+    <div style="display:flex; gap:1rem; justify-content:center; flex-wrap:wrap;">
+        <a href="{{ url_for('signup') }}" class="btn btn-accent" style="font-size:1rem; padding:14px 32px;">Get Started →</a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline" style="font-size:1rem; padding:14px 32px;">Login</a>
+    </div>
+</div>
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.5rem; margin-top:3rem;">
+    {% for icon, title, desc in [
+        ('🤖','Ensemble ML Model','Random Forest + Gradient Boosting + Logistic Regression with 85%+ accuracy'),
+        ('👨‍⚕️','Doctor Verification','Every report reviewed and digitally verified by registered doctors'),
+        ('📄','PDF Reports','Professional downloadable reports with clinical insights and recommendations'),
+        ('🔐','Role-Based Access','Separate secure login for patients and doctors with dedicated dashboards')
+    ] %}
+    <div class="card" style="text-align:center; padding:1.8rem 1.5rem;">
+        <div style="font-size:2.5rem; margin-bottom:0.8rem;">{{ icon }}</div>
+        <h3 style="margin-bottom:0.5rem; font-size:1.05rem;">{{ title }}</h3>
+        <p style="font-size:0.85rem; color:#718096; line-height:1.5;">{{ desc }}</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="card" style="margin-top:2rem; background:linear-gradient(135deg,#1a3a5c,#2d5986); color:#fff; text-align:center; padding:2.5rem;">
+    <h2 style="color:#fff; margin-bottom:0.5rem; font-size:1.4rem;">Try Demo Accounts</h2>
+    <p style="opacity:0.8; margin-bottom:1.5rem; font-size:0.9rem;">Pre-loaded accounts to explore all features</p>
+    <div style="display:flex; gap:2rem; justify-content:center; flex-wrap:wrap; font-size:0.9rem;">
+        <div style="background:rgba(255,255,255,0.1); padding:1rem 1.5rem; border-radius:12px;">
+            <div style="font-weight:700; margin-bottom:4px;">🧑‍⚕️ Doctor</div>
+            <div>doctor@demo.com</div>
+            <div style="opacity:0.7">Password: doctor123</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.1); padding:1rem 1.5rem; border-radius:12px;">
+            <div style="font-weight:700; margin-bottom:4px;">👤 Patient</div>
+            <div>patient@demo.com</div>
+            <div style="opacity:0.7">Password: patient123</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

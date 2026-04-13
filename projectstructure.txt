@@ -1,0 +1,16 @@
+diabetes_project/
+├── app.py                  ← Main Flask app (all routes)
+├── report_generator.py     ← PDF generation with ReportLab
+|── requirements.txt
+├── model/
+│   └── predictor.py        ← ML model (Pima dataset embedded)
+└── templates/
+    ├── base.html            ← Nav, layout, alerts
+    ├── index.html           ← Landing page
+    ├── login.html / signup.html
+    ├── patient_dashboard.html
+    ├── doctor_dashboard.html
+    ├── predict.html         ← 8-field form with demo fill
+    ├── result.html          ← Risk score + insights
+    ├── verify.html          ← Doctor verification form
+    └── model_info.html      ← Accuracy, AUC, feature importance
